@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from config import CONFIG
+from config import CONFIG, FILE_RENAME_MAPPING
 from memory_manager import clean_memory, display_debug_memory_stats
 
 def setup_sidebar():
@@ -40,9 +40,13 @@ def get_uploaded_files():
         key="main_files"
     )
 
-    uploaded_dict = {}    
+    uploaded_dict = {}
     for file in uploaded_files:
-        uploaded_dict[file.name] = file
+        original_name = file.name
+        renamed_name = FILE_RENAME_MAPPING.get(original_name, original_name)
+        uploaded_dict[renamed_name] = file
+    
+    st.write("✅ 已上传（重命名后）文件名：", list(uploaded_dict.keys()))
 
     # 输出上传文件名调试
     st.write("✅ 已上传文件名：", list(uploaded_dict.keys()))
