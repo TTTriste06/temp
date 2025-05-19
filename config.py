@@ -39,3 +39,16 @@ CONFIG = {
         }
     }
 }
+
+# config.py 中新增
+FILE_RENAME_MAPPING = {
+    "赛卓-未交订单.xlsx": "unfulfilled_orders.xlsx",
+    "赛卓-成品在制.xlsx": "finished_products.xlsx",
+    "赛卓-成品库存.xlsx": "finished_inventory.xlsx",
+    "赛卓-晶圆库存.xlsx": "wafer_inventory.xlsx",
+    "赛卓-CP在制.xlsx": "cp_in_progress.xlsx",
+    "赛卓-预测.xlsx": "forecast.xlsx",
+    "赛卓-安全库存.xlsx": "safety.xlsx",
+    "赛卓-新旧料号.xlsx": "mapping.xlsx"
+}
+
