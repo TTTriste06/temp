@@ -82,9 +82,9 @@ class PivotProcessor:
                     # 构建透视表
                     pivoted = self._create_pivot(df, config)
                     pivoted_display = pivoted.reset_index(drop=True)
-                    if sheet_name == "赛卓-成品库存":
+                    if sheet_name == "finished_inventory":
                         df_finished = pivoted
-                    elif sheet_name == "赛卓-成品在制":
+                    elif sheet_name == "finished_products":
                         product_in_progress = pivoted
 
                     st.write(f"✅ Pivot 表创建成功，维度：{pivoted_display.shape}")
@@ -92,13 +92,16 @@ class PivotProcessor:
 
 
 
-                    pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
-                    adjust_column_width(writer, sheet_name, pivoted)
+                    from config import REVERSE_MAPPING
+
+                    excel_sheet_name = REVERSE_MAPPING.get(sheet_name, sheet_name)
+                    pivoted.to_excel(writer, sheet_name=excel_sheet_name, index=False)
+                    adjust_column_width(writer, excel_sheet_name, pivoted)
 
 
 
                     # ✅ 如果当前是“未交订单”sheet，则拷贝前三列到新 sheet
-                    if sheet_name == "赛卓-未交订单":
+                    if sheet_name == "未交订单":
                         try:
                             # 提取前三列作为汇总基础
                             summary_preview = df[["晶圆品名", "规格", "品名"]].drop_duplicates().reset_index(drop=True)
@@ -206,7 +209,7 @@ class PivotProcessor:
             # 写入附加 sheet（如预测、安全库存）
             if additional_sheets:
                 for sheet_name, df in additional_sheets.items():
-                    if sheet_name == "赛卓-新旧料号":
+                    if sheet_name == "mapping":
                         continue
                     try:
                         st.write(f"📎 正在写入附加表：{sheet_name}，数据维度：{df.shape}")
