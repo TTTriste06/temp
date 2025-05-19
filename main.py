@@ -37,10 +37,11 @@ def main():
 
         # GitHub 辅助文件名称
         github_files = {
-            "赛卓-预测.xlsx": forecast_file,
-            "赛卓-安全库存.xlsx": safety_file,
-            "赛卓-新旧料号.xlsx": mapping_file
+            "forecast.xlsx": forecast_file,
+            "safety.xlsx": safety_file,
+            "mapping.xlsx": mapping_file
         }
+
 
         additional_sheets = {}
 
