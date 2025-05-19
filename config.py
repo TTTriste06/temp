@@ -52,3 +52,6 @@ FILE_RENAME_MAPPING = {
     "赛卓-新旧料号.xlsx": "mapping.xlsx"
 }
 
+# 用于生成 sheet 名时还原中文
+REVERSE_MAPPING = {v.replace(".xlsx", ""): k.replace(".xlsx", "") for k, v in FILE_RENAME_MAPPING.items()}
+
