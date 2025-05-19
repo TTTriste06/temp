@@ -14,6 +14,22 @@ def main():
     # 获取上传文件
     uploaded_files, forecast_file, safety_file, mapping_file, start = get_uploaded_files()
 
+    # 文件名映射表（上传名 → 处理名）
+    rename_mapping = {
+        "赛卓-未交订单.xlsx": "weijiaodindan.xlsx",
+        "赛卓-成品在制.xlsx": "chengpinzaizhi.xlsx",
+        "赛卓-CP在制.xlsx": "CPzaizhi.xlsx",
+        "赛卓-成品库存.xlsx": "chengpinkucun.xlsx",
+        "赛卓-晶圆库存.xlsx": "jingyuankucun.xlsx"
+    }
+    
+    # 将上传文件重命名为英文内部处理名
+    uploaded_files = {
+        rename_mapping.get(name, name): file
+        for name, file in uploaded_files.items()
+    }
+
+
     if start:
         if len(uploaded_files) < 5:
             st.error("❌ 请上传所有 5 个主要文件后再点击生成！")
