@@ -133,14 +133,28 @@ class PivotProcessor:
                             st.write(f"预测标红：{unmatched_forecast}")
 
                             # 追加成品库存信息
-                            df_finished = apply_mapping_and_merge(df_finished, mapping_df, FIELD_MAPPINGS[sheet_name])
+                            if not df_finished.empty:
+                                df_finished = apply_mapping_and_merge(df_finished, mapping_df, FIELD_MAPPINGS["finished_inventory"])
+                                summary_preview, unmatched_finished = merge_finished_inventory(summary_preview, df_finished)
+                                st.success("✅ 已合并成品库存")
+                                st.write(f"库存信息标红：{unmatched_finished}")
+                            else:
+                                st.warning("⚠️ 尚未读取成品库存（finished_inventory.xlsx），跳过合并")
+
                             st.write(df_finished)
                             summary_preview, unmatched_finished = merge_finished_inventory(summary_preview, df_finished)
                             st.success("✅ 已合并成品库存")
                             st.write(f"库存信息标红：{unmatched_finished}")
 
                             # 追加成品在制信息
-                            product_in_progress = apply_mapping_and_merge(product_in_progress, mapping_df, FIELD_MAPPINGS[sheet_name])
+                            if not product_in_progress.empty:
+                                product_in_progress = apply_mapping_and_merge(product_in_progress, mapping_df, FIELD_MAPPINGS["finished_products"])
+                                summary_preview, unmatched_in_progress = append_product_in_progress(summary_preview, product_in_progress, mapping_df)
+                                st.success("✅ 已合并成品在制")
+                                st.write(f"在制信息标红：{unmatched_in_progress}")
+                            else:
+                                st.warning("⚠️ 尚未读取成品在制（finished_products.xlsx），跳过合并")
+
                             st.write(product_in_progress)
                             summary_preview, unmatched_in_progress = append_product_in_progress(summary_preview, product_in_progress, mapping_df)
                             st.success("✅ 已合并成品在制")
