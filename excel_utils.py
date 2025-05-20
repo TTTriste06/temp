@@ -130,7 +130,7 @@ def mark_keys_on_sheet(ws, key_set, key_cols=(1, 2, 3)):
     # 标准化所有 key_set 中的值
     standardized_keys = set(tuple(standardize(x) for x in key) for key in key_set)
 
-    st.write(f"🟡 标黄匹配日志 - Sheet: {ws.title}")
+    # st.write(f"🟡 标黄匹配日志 - Sheet: {ws.title}")
 
     for row in range(2, ws.max_row + 1):  # 从第2行开始（跳过表头）
         key_raw = [ws.cell(row=row, column=col).value for col in key_cols]
