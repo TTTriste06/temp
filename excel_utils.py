@@ -136,10 +136,10 @@ def mark_keys_on_sheet(ws, key_set, key_cols=(1, 2, 3)):
         key_raw = [ws.cell(row=row, column=col).value for col in key_cols]
         key = tuple(standardize(v) for v in key_raw)
         display_key = tuple(key_raw)  # 用原始值用于日志输出
-        st.write(f"第 {row} 行匹配尝试: {display_key}")
+        # st.write(f"第 {row} 行匹配尝试: {display_key}")
         if key in standardized_keys:
-            st.write(f"✅ 第 {row} 行匹配成功: {display_key}")
+            # st.write(f"✅ 第 {row} 行匹配成功: {display_key}")
             for col in range(1, ws.max_column + 1):
                 ws.cell(row=row, column=col).fill = yellow_fill
-        else:
-            st.write(f"❌ 第 {row} 行未匹配: {display_key}")
+        # else:
+            # st.write(f"❌ 第 {row} 行未匹配: {display_key}")
