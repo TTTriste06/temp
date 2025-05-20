@@ -36,8 +36,6 @@ def get_uploaded_files():
         renamed_name = FILE_RENAME_MAPPING.get(original_name, original_name)
         uploaded_dict[renamed_name] = file
 
-    
-    st.write("✅ 已上传（重命名后）文件名：", list(uploaded_dict.keys()))
 
     # 输出上传文件名调试
     st.write("✅ 已上传文件名：", list(uploaded_dict.keys()))
