@@ -30,16 +30,6 @@ FIELD_MAPPINGS = {
     "forecast": {"规格": "产品型号", "品名": "ProductionNO.", "晶圆品名": "晶圆品名"}
 }
 
-# 初始化未匹配变量，防止引用前未赋值
-unmatched_safety = []
-unmatched_unfulfilled = []
-unmatched_forecast = []
-unmatched_finished = []
-unmatched_in_progress = []
-df_finished = pd.DataFrame()  # 空 DataFrame，防止后面引用时报错
-product_in_progress = pd.DataFrame()
-
-
 
 class PivotProcessor:
     def process(self, uploaded_files: dict, output_buffer, additional_sheets: dict = None):
