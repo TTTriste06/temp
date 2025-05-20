@@ -83,16 +83,3 @@ def mark_unmatched_keys_on_sheet(ws, unmatched_keys, wafer_col=1, spec_col=2, na
         if (wafer, spec, name) in unmatched_set:
             for col in range(1, ws.max_column + 1):
                 ws.cell(row=row, column=col).fill = red_fill
-
-def mark_keys_on_sheet(ws, key_set, key_cols=(1, 2, 3), fill_color="FFFF99"):
-    yellow_fill = PatternFill(start_color=fill_color, end_color=fill_color, fill_type="solid")
-
-    def std(val):
-        return str(val).strip() if val is not None else ""
-
-    for row in range(2, ws.max_row + 1):
-        key = tuple(std(ws.cell(row=row, column=col).value) for col in key_cols)
-        if key in key_set:
-            for col in range(1, ws.max_column + 1):
-                ws.cell(row=row, column=col).fill = yellow_fill
-
