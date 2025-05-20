@@ -33,6 +33,8 @@ FIELD_MAPPINGS = {
 
 class PivotProcessor:
     def process(self, uploaded_files: dict, output_buffer, additional_sheets: dict = None):
+        df_finished = pd.DataFrame() 
+        product_in_progress = pd.DataFrame()
         with pd.ExcelWriter(output_buffer, engine="openpyxl") as writer:
             for filename, file_obj in uploaded_files.items():
                 try:
