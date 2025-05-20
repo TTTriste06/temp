@@ -36,6 +36,9 @@ unmatched_unfulfilled = []
 unmatched_forecast = []
 unmatched_finished = []
 unmatched_in_progress = []
+df_finished = pd.DataFrame()  # 空 DataFrame，防止后面引用时报错
+product_in_progress = pd.DataFrame()
+
 
 
 class PivotProcessor:
