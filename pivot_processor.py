@@ -164,8 +164,8 @@ class PivotProcessor:
                 mark_unmatched_keys_on_sheet(writer.sheets["赛卓-成品库存"], unmatched_finished, wafer_col=1, spec_col=2, name_col=3)
                 mark_unmatched_keys_on_sheet(writer.sheets["赛卓-成品在制"], unmatched_in_progress, wafer_col=3, spec_col=4, name_col=5)
                 writer.sheets["赛卓-新旧料号"].delete_rows(2)
-                st.writer("all_mapped_keys")
-                st.writer(all_mapped_keys)
+                st.write("all_mapped_keys")
+                st.write(all_mapped_keys)
                 mark_keys_on_sheet(writer.sheets["汇总"], all_mapped_keys, key_cols=(1, 2, 3))
                 st.success("✅ 已完成未匹配项标记")
             except Exception as e:
