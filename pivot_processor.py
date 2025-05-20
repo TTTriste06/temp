@@ -220,7 +220,8 @@ class PivotProcessor:
 
             # 标记未匹配项
             try:
-                ws = writer.sheets["赛卓-安全库存"]
+                st.write(additional_sheets)
+                ws = writer.sheets["safety"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_safety, wafer_col=1, spec_col=3, name_col=5)
                
                 ws = writer.sheets["赛卓-未交订单"]
