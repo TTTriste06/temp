@@ -171,13 +171,6 @@ class PivotProcessor:
                     df.to_excel(writer, sheet_name="赛卓-新旧料号", index=False)
                     adjust_column_width(writer, "赛卓-新旧料号", df)
                 else:
-                    if key == "safety":
-                        df, key_safety = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[key])
-                        all_mapped_keys.update(key_safety)
-                    elif key == "forecast":
-                        df, key_forecast = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[key])
-                        all_mapped_keys.update(key_forecast)
-
                     sheet_name = REVERSE_MAPPING.get(key, key)
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
                     adjust_column_width(writer, sheet_name, df)
@@ -192,7 +185,7 @@ class PivotProcessor:
                 writer.sheets["赛卓-新旧料号"].delete_rows(2)
             
                 mark_keys_on_sheet(writer.sheets["汇总"], all_mapped_keys, (2, 3, 1))
-                #mark_keys_on_sheet(writer.sheets["赛卓-安全库存"], all_mapped_keys, (3, 5, 1))
+                mark_keys_on_sheet(writer.sheets["赛卓-安全库存"], all_mapped_keys, (3, 5, 1))
                 mark_keys_on_sheet(writer.sheets["赛卓-未交订单"], all_mapped_keys, (2, 3, 1))
                 mark_keys_on_sheet(writer.sheets["赛卓-预测"], all_mapped_keys, (1, 2, 3))
                 mark_keys_on_sheet(writer.sheets["赛卓-成品库存"], all_mapped_keys, (2, 3, 1))
