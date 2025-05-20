@@ -214,7 +214,7 @@ class PivotProcessor:
             # 写入附加 sheet（如预测、安全库存）
             if additional_sheets:
                 for sheet_name, df in additional_sheets.items():
-                    if sheet_name == "赛卓-新旧料号":
+                    if sheet_name == "mapping":
                         continue
                     try:
                         st.write(f"📎 正在写入附加表：{sheet_name}，数据维度：{df.shape}")
@@ -241,7 +241,7 @@ class PivotProcessor:
                 ws = writer.sheets["赛卓-成品在制"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_in_progress, wafer_col=3, spec_col=4, name_col=5)
 
-                ws = writer.sheets["赛卓-新旧料号"]
+                ws = writer.sheets["mapping"]
                 ws.delete_rows(2)  # 删除第 1 行
                 
                 
