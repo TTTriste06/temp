@@ -49,8 +49,8 @@ def merge_safety_inventory(summary_df, safety_df):
     # 剩下的就是未被使用的
     unmatched_keys = list(all_keys - used_keys)
 
-    st.write("用到的：")
-    st.write(used_keys)
+    # st.write("用到的：")
+    # st.write(used_keys)
 
     return merged, unmatched_keys
 
@@ -117,7 +117,7 @@ def append_forecast_to_summary(summary_df, forecast_df):
     """
 
     # Debug: 显示原始预测表列
-    st.write("原始预测表列名：", forecast_df.columns.tolist())
+    # st.write("原始预测表列名：", forecast_df.columns.tolist())
 
     # 重命名主键列
     forecast_df = forecast_df.rename(columns={
@@ -130,7 +130,7 @@ def append_forecast_to_summary(summary_df, forecast_df):
 
     # 找出预测月份列（如“5月预测”、“6月预测”...）
     month_cols = [col for col in forecast_df.columns if isinstance(col, str) and "预测" in col]
-    st.write("识别到的预测列：", month_cols)
+    # st.write("识别到的预测列：", month_cols)
 
     if not month_cols:
         st.warning("⚠️ 没有识别到任何预测列，请检查列名是否包含'预测'")
@@ -152,7 +152,7 @@ def append_forecast_to_summary(summary_df, forecast_df):
 
     # 合并进 summary
     merged = summary_df.merge(forecast_df, on=key_cols, how="left")
-    st.write("合并后的汇总示例：", merged.head(3))
+    # st.write("合并后的汇总示例：", merged.head(3))
 
     return merged, unmatched_keys
 
