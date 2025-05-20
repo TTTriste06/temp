@@ -9,6 +9,7 @@ from openpyxl import load_workbook
 from config import CONFIG, REVERSE_MAPPING
 from excel_utils import (
     adjust_column_width,
+    clean_df,
     merge_header_for_summary, 
     mark_unmatched_keys_on_sheet,
     mark_keys_on_sheet
@@ -57,6 +58,7 @@ class PivotProcessor:
             for filename, file_obj in uploaded_files.items():
                 try:
                     df = pd.read_excel(file_obj)
+                    df = clean_df(df)
                     config = CONFIG["pivot_config"].get(filename)
                     if not config:
                         st.warning(f"⚠️ 跳过未配置的文件：{filename}")
