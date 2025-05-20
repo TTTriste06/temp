@@ -59,8 +59,8 @@ class PivotProcessor:
 
 
                     # 映射替换（如果有）
-                    if sheet_name in FIELD_MAPPINGS and "赛卓-新旧料号" in (additional_sheets or {}):
-                        mapping_df = additional_sheets["赛卓-新旧料号"]
+                    if sheet_name in FIELD_MAPPINGS and "mapping" in (additional_sheets or {}):
+                        mapping_df = additional_sheets["mapping"]
 
 
                         try:
