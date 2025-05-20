@@ -129,14 +129,6 @@ class PivotProcessor:
                             st.write(f"预测标红：{unmatched_forecast}")
 
                             # 追加成品库存信息
-                            if not df_finished.empty:
-                                df_finished = apply_mapping_and_merge(df_finished, mapping_df, FIELD_MAPPINGS["finished_inventory"])
-                                summary_preview, unmatched_finished = merge_finished_inventory(summary_preview, df_finished)
-                                st.success("✅ 已合并成品库存")
-                                st.write(f"库存信息标红：{unmatched_finished}")
-                            else:
-                                st.warning("⚠️ 尚未读取成品库存（finished_inventory.xlsx），跳过合并")
-
                             st.write(df_finished)
                             summary_preview, unmatched_finished = merge_finished_inventory(summary_preview, df_finished)
                             st.success("✅ 已合并成品库存")
