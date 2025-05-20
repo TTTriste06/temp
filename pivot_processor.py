@@ -241,7 +241,7 @@ class PivotProcessor:
                 ws = writer.sheets["赛卓-成品在制"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_in_progress, wafer_col=3, spec_col=4, name_col=5)
 
-                ws = writer.sheets["mapping"]
+                ws = writer.sheets["赛卓-新旧料号"]
                 ws.delete_rows(2)  # 删除第 1 行
                 
                 
