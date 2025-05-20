@@ -68,6 +68,7 @@ def main():
                     content = download_from_github(safe_name)
 
                     df = pd.read_excel(BytesIO(content))
+                    df = clean_df(df)
                     additional_sheets[name.replace(".xlsx", "")] = df
                     st.info(f"📂 使用了 GitHub 上存储的历史版本：{name}")
                 except FileNotFoundError:
