@@ -105,7 +105,7 @@ def mark_unmatched_keys_on_sheet(ws, unmatched_keys, wafer_col=1, spec_col=2, na
                 ws.cell(row=row, column=col).fill = red_fill
 
 
-def mark_keys_on_sheet(ws, key_set, key_cols=(1, 2, 3)):
+def mark_keys_on_sheet(ws, key_set, key_cols)):
     """
     在 openpyxl worksheet 中标黄 key_set 中出现的主键行，并写出每一行匹配状态。
 
