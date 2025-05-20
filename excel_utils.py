@@ -26,6 +26,12 @@ def standardize(val):
 
     return val
 
+def clean_df(df):
+    df = df.fillna("")  # 将所有 NaN 替换为空字符串
+    df = df.applymap(lambda x: str(x).strip() if isinstance(x, str) else x)  # 去除字符串中的前后空格
+    return df
+
+
 
 def adjust_column_width(writer, sheet_name, df):
     """
