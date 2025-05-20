@@ -30,6 +30,13 @@ FIELD_MAPPINGS = {
     "forecast": {"规格": "产品型号", "品名": "ProductionNO.", "晶圆品名": "晶圆品名"}
 }
 
+# 初始化未匹配变量，防止引用前未赋值
+unmatched_safety = []
+unmatched_unfulfilled = []
+unmatched_forecast = []
+unmatched_finished = []
+unmatched_in_progress = []
+
 
 class PivotProcessor:
     def process(self, uploaded_files: dict, output_buffer, additional_sheets: dict = None):
@@ -94,14 +101,6 @@ class PivotProcessor:
                     excel_sheet_name = REVERSE_MAPPING.get(sheet_name, sheet_name)
                     pivoted.to_excel(writer, sheet_name=excel_sheet_name, index=False)
                     adjust_column_width(writer, excel_sheet_name, pivoted)
-
-                    # 初始化未匹配变量，防止引用前未赋值
-                    unmatched_safety = []
-                    unmatched_unfulfilled = []
-                    unmatched_forecast = []
-                    unmatched_finished = []
-                    unmatched_in_progress = []
-
 
                     # ✅ 如果当前是“未交订单”sheet，则拷贝前三列到新 sheet
 
@@ -248,7 +247,6 @@ class PivotProcessor:
 
                 # ✅ 所有写入完成后再加筛选器，避免被 to_excel 覆盖
                 for sheet_name, ws in writer.sheets.items():
-                    st.write(sheet_name)
                     # 如果第1行是你需要的 header，就添加筛选器
                     col_letter = get_column_letter(ws.max_column)
                     if sheet_name == "汇总":
