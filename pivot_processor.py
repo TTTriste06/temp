@@ -220,24 +220,23 @@ class PivotProcessor:
 
             # 标记未匹配项
             try:
-                st.write(additional_sheets)
                 ws = writer.sheets["safety"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_safety, wafer_col=1, spec_col=3, name_col=5)
                
-                ws = writer.sheets["赛卓-未交订单"]
+                ws = writer.sheets["unfulfilled_orders"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_unfulfilled, wafer_col=1, spec_col=2, name_col=3)
                 
-                ws = writer.sheets["赛卓-预测"]
+                ws = writer.sheets["forecast"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_forecast, wafer_col=3, spec_col=1, name_col=2)
                 ws.delete_rows(2)  # 删除第 1 行
                 
-                ws = writer.sheets["赛卓-成品库存"]
+                ws = writer.sheets["finished_inventory"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_finished, wafer_col=1, spec_col=2, name_col=3)
                
-                ws = writer.sheets["赛卓-成品在制"]
+                ws = writer.sheets["finished_products"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_in_progress, wafer_col=3, spec_col=4, name_col=5)
 
-                ws = writer.sheets["赛卓-新旧料号"]
+                ws = writer.sheets["mapping"]
                 ws.delete_rows(2)  # 删除第 1 行
                 
                 
