@@ -43,6 +43,12 @@ class PivotProcessor:
         unmatched_finished = []
         unmatched_in_progress = []
 
+        key_safety = []
+        key_unfulfilled = []
+        key_forecast = []
+        key_finished = []
+        key_in_progress = []
+
         mapping_df = additional_sheets.get("mapping", pd.DataFrame())
 
         all_mapped_keys = set()
@@ -66,9 +72,22 @@ class PivotProcessor:
                             "封装厂", "PC", "半成品"
                         ] + list(mapping_df.columns[9:])
                         st.success(f"✅ `{sheet_key}` 正在进行新旧料号替换...")
-                        df, mapped_keys = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[sheet_key])
-                        all_mapped_keys.update(mapped_keys)
+                        
 
+                        if sheet_key == "unfulfilled_orders":
+                            df, key_unfulfilled = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[sheet_key])
+                            all_mapped_keys.update(key_unfulfilled)
+                        elif sheet_key == "finished_inventory":
+                            df, key_finished = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[sheet_key])
+                            all_mapped_keys.update(key_finished)
+                        elif sheet_key == "finished_products":
+                            df, key_in_progress = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[sheet_key])
+                            all_mapped_keys.update(key_in_progress)
+                        else:
+                            df, mapped_keys = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[sheet_key])
+                            all_mapped_keys.update(mapped_keys)
+
+        
                     if "date_format" in config:
                         df = self._process_date_column(df, config["columns"], config["date_format"])
 
@@ -152,6 +171,13 @@ class PivotProcessor:
                     df.to_excel(writer, sheet_name="赛卓-新旧料号", index=False)
                     adjust_column_width(writer, "赛卓-新旧料号", df)
                 else:
+                    if key == "safety":
+                        df, key_safety = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[key])
+                        all_mapped_keys.update(key_safety)
+                    elif key == "forecast":
+                        df, key_forecast = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[key])
+                        all_mapped_keys.update(key_forecast)
+
                     sheet_name = REVERSE_MAPPING.get(key, key)
                     df.to_excel(writer, sheet_name=sheet_name, index=False)
                     adjust_column_width(writer, sheet_name, df)
@@ -164,9 +190,14 @@ class PivotProcessor:
                 mark_unmatched_keys_on_sheet(writer.sheets["赛卓-成品库存"], unmatched_finished, wafer_col=1, spec_col=2, name_col=3)
                 mark_unmatched_keys_on_sheet(writer.sheets["赛卓-成品在制"], unmatched_in_progress, wafer_col=3, spec_col=4, name_col=5)
                 writer.sheets["赛卓-新旧料号"].delete_rows(2)
-                st.write("all_mapped_keys")
-                st.write(all_mapped_keys)
+            
                 mark_keys_on_sheet(writer.sheets["汇总"], all_mapped_keys, (2, 3, 1))
+                mark_keys_on_sheet(writer.sheets["赛卓-安全库存"], all_mapped_keys, (3, 5, 1))
+                mark_keys_on_sheet(writer.sheets["赛卓-未交订单"], all_mapped_keys, (2, 3, 1))
+                mark_keys_on_sheet(writer.sheets["赛卓-预测"], all_mapped_keys, (1, 2, 3))
+                mark_keys_on_sheet(writer.sheets["赛卓-成品库存"], all_mapped_keys, (2, 3, 1))
+                mark_keys_on_sheet(writer.sheets["赛卓-成品在制"], all_mapped_keys, (4, 5, 3))
+                
                 st.success("✅ 已完成未匹配项标记")
             except Exception as e:
                 st.warning(f"⚠️ 未匹配标记失败：{e}")
