@@ -79,6 +79,7 @@ class PivotProcessor:
                     sheet_name = REVERSE_MAPPING.get(sheet_key, sheet_key)
                     pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
                     adjust_column_width(writer, sheet_name, pivoted)
+                    
                     # ✅ 标黄：如果 _由新旧料号映射 存在，则标记
                     if "_由新旧料号映射" in pivoted.columns:
                         ws = writer.sheets[excel_sheet_name]
