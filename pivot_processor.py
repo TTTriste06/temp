@@ -37,7 +37,7 @@ class PivotProcessor:
             for filename, file_obj in uploaded_files.items():
                 try:
                     df = pd.read_excel(file_obj)
-                    st.write(filename)
+                    # st.write(filename)
                     config = CONFIG["pivot_config"].get(filename)
                     if not config:
                         st.warning(f"⚠️ 跳过未配置的文件：{filename}")
@@ -45,10 +45,10 @@ class PivotProcessor:
 
 
                     sheet_name = filename[:30].replace(".xlsx", "")
-                    st.write(f"📄 正在处理文件: `{filename}` → Sheet: `{sheet_name}`")
+                    # st.write(f"📄 正在处理文件: `{filename}` → Sheet: `{sheet_name}`")
 
 
-                    st.write(f"原始数据维度: {df.shape}")
+                    # st.write(f"原始数据维度: {df.shape}")
                     st.dataframe(df.head(3))
 
 
@@ -59,8 +59,6 @@ class PivotProcessor:
 
 
                     # 映射替换（如果有）
-                    st.write("additional_sheets")
-                    st.write(additional_sheets)
                     if sheet_name in FIELD_MAPPINGS and "mapping" in (additional_sheets or {}):
                         mapping_df = additional_sheets["mapping"]
 
@@ -74,7 +72,7 @@ class PivotProcessor:
                             st.success(f"✅ `{sheet_name}` 正在进行新旧料号替换...")
                         except Exception as e:
                             st.error(f"❌ `{sheet_name}` 替换前列名失败：{e}")
-                            st.write("列名：", mapping_df.columns.tolist())
+                            # st.write("列名：", mapping_df.columns.tolist())
                             continue
 
                         
@@ -89,8 +87,8 @@ class PivotProcessor:
                     elif sheet_name == "finished_products":
                         product_in_progress = pivoted
 
-                    st.write(f"✅ Pivot 表创建成功，维度：{pivoted_display.shape}")
-                    st.dataframe(pivoted_display.head(3))
+                    # st.write(f"✅ Pivot 表创建成功，维度：{pivoted_display.shape}")
+                    # st.dataframe(pivoted_display.head(3))
 
 
                     excel_sheet_name = REVERSE_MAPPING.get(sheet_name, sheet_name)
@@ -106,6 +104,8 @@ class PivotProcessor:
 
 
                     # ✅ 如果当前是“未交订单”sheet，则拷贝前三列到新 sheet
+                    st.write(sheet_name)
+
                     if sheet_name == "赛卓-未交订单":
                         try:
                             # 提取前三列作为汇总基础
