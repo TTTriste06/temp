@@ -105,40 +105,41 @@ def mark_unmatched_keys_on_sheet(ws, unmatched_keys, wafer_col=1, spec_col=2, na
                 ws.cell(row=row, column=col).fill = red_fill
 
 
-def mark_keys_on_sheet(ws, key_set, key_cols)):
+def mark_keys_on_sheet(ws, key_set, key_cols=(1, 2, 3)):
     """
-    在 openpyxl worksheet 中标黄 key_set 中出现的主键行，并写出每一行匹配状态。
+    在工作表中标黄匹配 key_set 中的行，基于主键列匹配。
 
     参数:
-    - ws: openpyxl worksheet 对象
-    - key_set: set of tuple，如 {("WaferA", "Spec1", "NameX"), ...}
-    - key_cols: 表示主键在 sheet 中的列号 (从1开始)，默认是 (1, 2, 3)
+    - ws: openpyxl worksheet
+    - key_set: set of tuple，例如 {("晶圆品名", "规格", "品名"), ...}
+    - key_cols: 表示主键所在的列号 (从1开始)，默认是 (1, 2, 3) 对应“晶圆品名”, “规格”, “品名”
     """
+    from openpyxl.styles import PatternFill
+    import re
+
     yellow_fill = PatternFill(start_color="FFFF99", end_color="FFFF99", fill_type="solid")
 
-    # 标准化 key_set
-    standardized_keys = set(
-        tuple(standardize(x) for x in key)
-        for key in key_set
-        if isinstance(key, (list, tuple)) and len(key) == len(key_cols)
-    )
+    def standardize(val):
+        if val is None:
+            return ''
+        val = str(val)
+        val = val.replace('\u3000', ' ')  # 全角空格
+        val = re.sub(r"[\"'‘’“”]", '', val)  # 引号
+        return val.strip()
 
-    st.markdown(f"### 🟡 标黄匹配日志 - Sheet: `{ws.title}`")
-    match_count = 0
-    total_rows = 0
+    # 标准化所有 key_set 中的值
+    standardized_keys = set(tuple(standardize(x) for x in key) for key in key_set)
+
+    st.write(f"🟡 标黄匹配日志 - Sheet: {ws.title}")
 
     for row in range(2, ws.max_row + 1):  # 从第2行开始（跳过表头）
-        total_rows += 1
-        key = tuple(
-            standardize(ws.cell(row=row, column=col).value)
-            for col in key_cols
-        )
+        key_raw = [ws.cell(row=row, column=col).value for col in key_cols]
+        key = tuple(standardize(v) for v in key_raw)
+        display_key = tuple(key_raw)  # 用原始值用于日志输出
+        st.write(f"第 {row} 行匹配尝试: {display_key}")
         if key in standardized_keys:
-            match_count += 1
+            st.write(f"✅ 第 {row} 行匹配成功: {display_key}")
             for col in range(1, ws.max_column + 1):
                 ws.cell(row=row, column=col).fill = yellow_fill
-            st.write(f"✅ 第 {row} 行匹配成功: {key}")
         else:
-            st.write(f"❌ 第 {row} 行未匹配: {key}")
-
-    st.success(f"✅ 共检查 {total_rows} 行，其中成功匹配并标黄 {match_count} 行。")
+            st.write(f"❌ 第 {row} 行未匹配: {display_key}")
