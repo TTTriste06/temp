@@ -67,7 +67,6 @@ def mark_unmatched_keys_on_sheet(ws, unmatched_keys, wafer_col=1, spec_col=2, na
     """
     red_fill = PatternFill(start_color="FF9999", end_color="FF9999", fill_type="solid")
 
-    # 标准化 unmatched_keys: 空值统一为 ''
     def standardize(val):
         return str(val).strip() if val is not None else ''
 
@@ -76,7 +75,7 @@ def mark_unmatched_keys_on_sheet(ws, unmatched_keys, wafer_col=1, spec_col=2, na
         for key in unmatched_keys
     )
 
-    for row in range(2, ws.max_row + 1):  # 从第2行开始（跳过表头）
+    for row in range(2, ws.max_row + 1):  # 从第2行开始
         wafer = standardize(ws.cell(row=row, column=wafer_col).value)
         spec = standardize(ws.cell(row=row, column=spec_col).value)
         name = standardize(ws.cell(row=row, column=name_col).value)
