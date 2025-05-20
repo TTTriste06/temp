@@ -1,3 +1,5 @@
+import pandas as pd
+
 def apply_mapping_and_merge(df, mapping_df, field_map, verbose=True):
     spec_col = field_map["规格"]
     name_col = field_map["品名"]
