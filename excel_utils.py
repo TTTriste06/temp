@@ -84,9 +84,12 @@ def mark_unmatched_keys_on_sheet(ws, unmatched_keys, wafer_col=1, spec_col=2, na
             for col in range(1, ws.max_column + 1):
                 ws.cell(row=row, column=col).fill = red_fill
 
+from openpyxl.styles import PatternFill
+import streamlit as st
+
 def mark_keys_on_sheet(ws, key_set, key_cols=(1, 2, 3)):
     """
-    在 openpyxl worksheet 中标黄 key_set 中出现的主键行。
+    在 openpyxl worksheet 中标黄 key_set 中出现的主键行，并写出每一行匹配状态。
 
     参数:
     - ws: openpyxl worksheet 对象
@@ -95,23 +98,32 @@ def mark_keys_on_sheet(ws, key_set, key_cols=(1, 2, 3)):
     """
     yellow_fill = PatternFill(start_color="FFFF99", end_color="FFFF99", fill_type="solid")
 
-    # 标准化函数
     def standardize(val):
         return str(val).strip() if val is not None else ''
 
-    # 标准化后的 key_set
+    # 标准化 key_set
     standardized_keys = set(
         tuple(standardize(x) for x in key)
         for key in key_set
         if isinstance(key, (list, tuple)) and len(key) == len(key_cols)
     )
 
-    # 遍历每一行并比对 key
-    for row in range(2, ws.max_row + 1):  # 从第2行开始跳过表头
+    st.markdown(f"### 🟡 标黄匹配日志 - Sheet: `{ws.title}`")
+    match_count = 0
+    total_rows = 0
+
+    for row in range(2, ws.max_row + 1):  # 从第2行开始（跳过表头）
+        total_rows += 1
         key = tuple(
             standardize(ws.cell(row=row, column=col).value)
             for col in key_cols
         )
         if key in standardized_keys:
+            match_count += 1
             for col in range(1, ws.max_column + 1):
                 ws.cell(row=row, column=col).fill = yellow_fill
+            st.write(f"✅ 第 {row} 行匹配成功: {key}")
+        else:
+            st.write(f"❌ 第 {row} 行未匹配: {key}")
+
+    st.success(f"✅ 共检查 {total_rows} 行，其中成功匹配并标黄 {match_count} 行。")
