@@ -23,11 +23,11 @@ from summary import (
 )
 
 FIELD_MAPPINGS = {
-    "赛卓-未交订单": {"规格": "规格", "品名": "品名", "晶圆品名": "晶圆品名"},
-    "赛卓-成品在制": {"规格": "产品规格", "品名": "产品品名", "晶圆品名": "晶圆型号"},
-    "赛卓-成品库存": {"规格": "规格", "品名": "品名", "晶圆品名": "WAFER品名"},
-    "赛卓-安全库存": {"规格": "OrderInformation", "品名": "ProductionNO.", "晶圆品名": "WaferID"},
-    "赛卓-预测": {"规格": "产品型号", "品名": "ProductionNO.", "晶圆品名": "晶圆品名"}
+    "unfulfilled_orders": {"规格": "规格", "品名": "品名", "晶圆品名": "晶圆品名"},
+    "finished_products": {"规格": "产品规格", "品名": "产品品名", "晶圆品名": "晶圆型号"},
+    "finished_inventory": {"规格": "规格", "品名": "品名", "晶圆品名": "WAFER品名"},
+    "safety": {"规格": "OrderInformation", "品名": "ProductionNO.", "晶圆品名": "WaferID"},
+    "forecast": {"规格": "产品型号", "品名": "ProductionNO.", "晶圆品名": "晶圆品名"}
 }
 
 
@@ -93,9 +93,6 @@ class PivotProcessor:
                     st.dataframe(pivoted_display.head(3))
 
 
-
-                    from config import REVERSE_MAPPING
-
                     excel_sheet_name = REVERSE_MAPPING.get(sheet_name, sheet_name)
                     pivoted.to_excel(writer, sheet_name=excel_sheet_name, index=False)
                     adjust_column_width(writer, excel_sheet_name, pivoted)
@@ -109,7 +106,7 @@ class PivotProcessor:
 
 
                     # ✅ 如果当前是“未交订单”sheet，则拷贝前三列到新 sheet
-                    if sheet_name == "未交订单":
+                    if sheet_name == "赛卓-未交订单":
                         try:
                             # 提取前三列作为汇总基础
                             summary_preview = df[["晶圆品名", "规格", "品名"]].drop_duplicates().reset_index(drop=True)
