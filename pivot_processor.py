@@ -228,17 +228,17 @@ class PivotProcessor:
                 ws = writer.sheets["safety"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_safety, wafer_col=1, spec_col=3, name_col=5)
                
-                ws = writer.sheets["unfulfilled_orders"]
+                ws = writer.sheets["赛卓-未交订单"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_unfulfilled, wafer_col=1, spec_col=2, name_col=3)
                 
                 ws = writer.sheets["forecast"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_forecast, wafer_col=3, spec_col=1, name_col=2)
                 ws.delete_rows(2)  # 删除第 1 行
                 
-                ws = writer.sheets["finished_inventory"]
+                ws = writer.sheets["赛卓-成品库存"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_finished, wafer_col=1, spec_col=2, name_col=3)
                
-                ws = writer.sheets["finished_products"]
+                ws = writer.sheets["赛卓-成品在制"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_in_progress, wafer_col=3, spec_col=4, name_col=5)
 
                 ws = writer.sheets["mapping"]
