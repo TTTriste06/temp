@@ -45,8 +45,6 @@ class PivotProcessor:
         unmatched_in_progress = []
     
         mapping_df = additional_sheets.get("mapping", pd.DataFrame())
-
-        all_mapped_keys = set()
     
         with pd.ExcelWriter(output_buffer, engine="openpyxl") as writer:
     
@@ -67,8 +65,7 @@ class PivotProcessor:
                             "封装厂", "PC", "半成品"
                         ] + list(mapping_df.columns[9:])
                         st.success(f"✅ `{sheet_key}` 正在进行新旧料号替换...")
-                        df, mapped_keys = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[sheet_key])
-                        all_mapped_keys.update(mapped_keys)
+                        df = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[sheet_key])
     
                     if "date_format" in config:
                         df = self._process_date_column(df, config["columns"], config["date_format"])
@@ -77,19 +74,6 @@ class PivotProcessor:
                     sheet_name = REVERSE_MAPPING.get(sheet_key, sheet_key)
                     pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
                     adjust_column_width(writer, sheet_name, pivoted)
-                    # ✅ 标黄：如果 _由新旧料号映射 存在，则标记
-                    if "_由新旧料号映射" in pivoted.columns:
-                        ws = writer.sheets[excel_sheet_name]
-                        yellow_fill = PatternFill(start_color="FFFF99", end_color="FFFF99", fill_type="solid")
-                    
-                        for i, is_mapped in enumerate(pivoted["_由新旧料号映射"], start=2):  # Excel从第2行开始
-                            if is_mapped:
-                                for col in range(1, ws.max_column + 1):
-                                    ws.cell(row=i, column=col).fill = yellow_fill
-                    
-                        # 删除标记列，避免污染输出
-                        del pivoted["_由新旧料号映射"]
-
     
                     # 保存关键数据用于后续合并
                     if sheet_key == "unfulfilled_orders":
@@ -128,8 +112,7 @@ class PivotProcessor:
     
                 if not df_finished.empty:
                     if not mapping_df.empty:
-                        df_finished, mapped_keys = apply_mapping_and_merge(df_finished, mapping_df, FIELD_MAPPINGS["finished_inventory"])
-                        all_mapped_keys.update(mapped_keys)
+                        df_finished = apply_mapping_and_merge(df_finished, mapping_df, FIELD_MAPPINGS["finished_inventory"])
                     summary_preview, unmatched_finished = merge_finished_inventory(summary_preview, df_finished)
                     st.success("✅ 已合并成品库存")
                 else:
@@ -137,8 +120,7 @@ class PivotProcessor:
     
                 if not product_in_progress.empty:
                     if not mapping_df.empty:
-                        product_in_progress, mapped_keys = apply_mapping_and_merge(product_in_progress, mapping_df, FIELD_MAPPINGS["finished_products"])
-                        all_mapped_keys.update(mapped_keys)
+                        product_in_progress = apply_mapping_and_merge(product_in_progress, mapping_df, FIELD_MAPPINGS["finished_products"])
                     summary_preview, unmatched_in_progress = append_product_in_progress(summary_preview, product_in_progress, mapping_df)
                     st.success("✅ 已合并成品在制")
                 else:
@@ -192,8 +174,6 @@ class PivotProcessor:
                 st.success("✅ 已完成未匹配项标记")
             except Exception as e:
                 st.warning(f"⚠️ 未匹配标记失败：{e}")
-
-            mark_keys_on_sheet(writer.sheets["汇总"], all_mapped_keys, key_cols=(1, 2, 3))
     
             # ✅ Step 7: 添加筛选器
             for name, ws in writer.sheets.items():
