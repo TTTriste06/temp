@@ -106,6 +106,13 @@ class PivotProcessor:
                             # 提取前三列作为汇总基础
                             summary_preview = df[["晶圆品名", "规格", "品名"]].drop_duplicates().reset_index(drop=True)
 
+                            # 初始化未匹配变量，防止引用前未赋值
+                            unmatched_safety = []
+                            unmatched_unfulfilled = []
+                            unmatched_forecast = []
+                            unmatched_finished = []
+                            unmatched_in_progress = []
+
 
                             # 追加安全库存信息
                             df_safety = additional_sheets["safety"]
