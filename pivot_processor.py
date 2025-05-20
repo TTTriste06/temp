@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from openpyxl.utils import get_column_letter
 from openpyxl.styles import Alignment, Font
 from openpyxl import load_workbook
-from config import CONFIG
+from config import CONFIG, REVERSE_MAPPING
 from excel_utils import (
     adjust_column_width, 
     merge_header_for_summary, 
@@ -213,25 +213,26 @@ class PivotProcessor:
 
             # 写入附加 sheet（如预测、安全库存）
             if additional_sheets:
-                for sheet_name, df in additional_sheets.items():
-                    if sheet_name == "mapping":
+                for sheet_key, df in additional_sheets.items():
+                    if sheet_key == "mapping":
                         continue
                     try:
+                        sheet_name = REVERSE_MAPPING.get(sheet_key, sheet_key)  # 英文 ➜ 中文
                         st.write(f"📎 正在写入附加表：{sheet_name}，数据维度：{df.shape}")
                         df.to_excel(writer, sheet_name=sheet_name, index=False)
                         adjust_column_width(writer, sheet_name, df)
                     except Exception as e:
-                        st.error(f"❌ 写入附加 Sheet `{sheet_name}` 失败: {e}")
+                        st.error(f"❌ 写入附加 Sheet `{sheet_key}` 失败: {e}")
 
             # 标记未匹配项
             try:
-                ws = writer.sheets["safety"]
+                ws = writer.sheets["赛卓-安全库存"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_safety, wafer_col=1, spec_col=3, name_col=5)
                
                 ws = writer.sheets["赛卓-未交订单"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_unfulfilled, wafer_col=1, spec_col=2, name_col=3)
                 
-                ws = writer.sheets["forecast"]
+                ws = writer.sheets["赛卓-预测"]
                 mark_unmatched_keys_on_sheet(ws, unmatched_forecast, wafer_col=3, spec_col=1, name_col=2)
                 ws.delete_rows(2)  # 删除第 1 行
                 
