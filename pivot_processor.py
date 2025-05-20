@@ -101,25 +101,26 @@ class PivotProcessor:
                     pivoted.to_excel(writer, sheet_name=excel_sheet_name, index=False)
                     adjust_column_width(writer, excel_sheet_name, pivoted)
 
-                    # ✅ 如果当前是“未交订单”sheet，则拷贝前三列到新 sheet
-
-                    if sheet_name == "unfulfilled_orders":
-                        try:
+                    try:
+                        # ✅ 如果当前是“未交订单”sheet，则拷贝前三列到新 sheet
+                        if sheet_name == "unfulfilled_orders":
                             # 提取前三列作为汇总基础
                             summary_preview = df[["晶圆品名", "规格", "品名"]].drop_duplicates().reset_index(drop=True)
 
+                        if sheet_name == "safety":
                             # 追加安全库存信息
                             df_safety = additional_sheets["safety"]
                             summary_preview, unmatched_safety = merge_safety_inventory(summary_preview, df_safety)
                             st.success("✅ 已合并安全库存数据")
                             st.write(f"安全库存标红：{unmatched_safety}")
 
-
+                        if sheet_name == "unfulfilled_orders":
                             # 追加未交订单信息
                             summary_preview, unmatched_unfulfilled = append_unfulfilled_summary_columns(summary_preview, pivoted)
                             st.success("✅ 已合并未交订单数据")
                             st.write(f"未交订单标红：{unmatched_unfulfilled}")
 
+                        if sheet_name == "forecast": 
                             # 追加预测信息
                             df_forecast = additional_sheets["forecast"]
                             df_forecast.columns = df_forecast.iloc[0]   # 第二行设为 header
@@ -128,79 +129,73 @@ class PivotProcessor:
                             st.success("✅ 已合并预测数据")
                             st.write(f"预测标红：{unmatched_forecast}")
 
+                        if sheet_name == "finished_inventory":
                             # 追加成品库存信息
                             st.write(df_finished)
                             summary_preview, unmatched_finished = merge_finished_inventory(summary_preview, df_finished)
                             st.success("✅ 已合并成品库存")
                             st.write(f"库存信息标红：{unmatched_finished}")
 
+                        if sheet_name == "finished_products":
                             # 追加成品在制信息
-                            if not product_in_progress.empty:
-                                product_in_progress = apply_mapping_and_merge(product_in_progress, mapping_df, FIELD_MAPPINGS["finished_products"])
-                                summary_preview, unmatched_in_progress = append_product_in_progress(summary_preview, product_in_progress, mapping_df)
-                                st.success("✅ 已合并成品在制")
-                                st.write(f"在制信息标红：{unmatched_in_progress}")
-                            else:
-                                st.warning("⚠️ 尚未读取成品在制（finished_products.xlsx），跳过合并")
-
+                            product_in_progress = apply_mapping_and_merge(product_in_progress, mapping_df, FIELD_MAPPINGS[sheet_name])
                             st.write(product_in_progress)
                             summary_preview, unmatched_in_progress = append_product_in_progress(summary_preview, product_in_progress, mapping_df)
                             st.success("✅ 已合并成品在制")
                             st.write(f"在制信息标红：{unmatched_in_progress}")
 
 
-
-                            # 写入“汇总” sheet
-                            summary_preview.to_excel(writer, sheet_name="汇总", index=False)
-                            adjust_column_width(writer, "汇总", summary_preview)
-                            st.success("✅ 已写入汇总Sheet")
-
-
-
-                            # 打开 worksheet 进行格式化
-                            ws = writer.sheets["汇总"]
-                            header_row = list(summary_preview.columns)
-
-
-                            # ✅ 找出所有“未交订单”相关列（顺序保留）
-                            unfulfilled_cols = [col for col in header_row if (
-                                col == "总未交订单" or 
-                                col == "历史未交订单数量" or 
-                                "未交订单数量" in col
-                              )]
-                            st.write(unfulfilled_cols)
-
-                            # ✅ 找出所有“预测”相关列（顺序保留）
-                            forecast_cols = [col for col in header_row if (
-                                "预测" in col
-                            )]
-                            st.write(forecast_cols)
-
-                            # ✅ 找出所有“成品库存”相关列（顺序保留）
-                            finished_cols = [col for col in header_row if (
-                                col == "数量_HOLD仓" or 
-                                col == "数量_成品仓" or 
-                                col == "数量_半成品仓"
-                            )]
-                            st.write(finished_cols)
-
-
-                            merge_header_for_summary(
-                                ws,
-                                summary_preview,
-                                {
-                                    "安全库存": (" InvWaf", " InvPart"),
-                                    "未交订单": (unfulfilled_cols[0], unfulfilled_cols[-1]),
-                                    "预测": (forecast_cols[0], forecast_cols[-1]),
-                                    "成品库存": (finished_cols[0], finished_cols[-1]),
-                                    "成品在制": ("成品在制", "半成品在制")
-                                 }
-                            )
+                        # 写入“汇总” sheet
+                        summary_preview.to_excel(writer, sheet_name="汇总", index=False)
+                        adjust_column_width(writer, "汇总", summary_preview)
+                        st.success("✅ 已写入汇总Sheet")
 
 
 
-                        except Exception as e:
-                            st.error(f"❌ 写入汇总失败: {e}")
+                        # 打开 worksheet 进行格式化
+                        ws = writer.sheets["汇总"]
+                        header_row = list(summary_preview.columns)
+
+
+                        # ✅ 找出所有“未交订单”相关列（顺序保留）
+                        unfulfilled_cols = [col for col in header_row if (
+                            col == "总未交订单" or 
+                            col == "历史未交订单数量" or 
+                            "未交订单数量" in col
+                          )]
+                        st.write(unfulfilled_cols)
+
+                        # ✅ 找出所有“预测”相关列（顺序保留）
+                        forecast_cols = [col for col in header_row if (
+                            "预测" in col
+                        )]
+                        st.write(forecast_cols)
+
+                        # ✅ 找出所有“成品库存”相关列（顺序保留）
+                        finished_cols = [col for col in header_row if (
+                            col == "数量_HOLD仓" or 
+                            col == "数量_成品仓" or 
+                            col == "数量_半成品仓"
+                        )]
+                        st.write(finished_cols)
+
+
+                        merge_header_for_summary(
+                            ws,
+                            summary_preview,
+                            {
+                                "安全库存": (" InvWaf", " InvPart"),
+                                "未交订单": (unfulfilled_cols[0], unfulfilled_cols[-1]),
+                                "预测": (forecast_cols[0], forecast_cols[-1]),
+                                "成品库存": (finished_cols[0], finished_cols[-1]),
+                                "成品在制": ("成品在制", "半成品在制")
+                             }
+                        )
+
+
+
+                    except Exception as e:
+                        st.error(f"❌ 写入汇总失败: {e}")
 
                 except Exception as e:
                     st.error(f"❌ 文件 `{filename}` 处理失败: {e}")
