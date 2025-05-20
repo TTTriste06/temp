@@ -76,9 +76,6 @@ class PivotProcessor:
                     pivoted.to_excel(writer, sheet_name=sheet_name, index=False)
                     adjust_column_width(writer, sheet_name, pivoted)
 
-                    # ✅ 标黄（基于 all_mapped_keys）
-                    mark_keys_on_sheet(writer.sheets[sheet_name], all_mapped_keys, key_cols=(1, 2, 3))
-
                     if sheet_key == "unfulfilled_orders":
                         df_unfulfilled = df
                         pivot_unfulfilled = pivoted
@@ -149,7 +146,6 @@ class PivotProcessor:
                 }
             )
 
-            mark_keys_on_sheet(writer.sheets["汇总"], all_mapped_keys, key_cols=(1, 2, 3))
 
             for key, df in additional_sheets.items():
                 if key == "mapping":
@@ -161,14 +157,14 @@ class PivotProcessor:
                     adjust_column_width(writer, sheet_name, df)
 
             try:
-                if "safety" in additional_sheets:
-                    mark_unmatched_keys_on_sheet(writer.sheets["赛卓-安全库存"], unmatched_safety, wafer_col=1, spec_col=3, name_col=5)
+                mark_unmatched_keys_on_sheet(writer.sheets["赛卓-安全库存"], unmatched_safety, wafer_col=1, spec_col=3, name_col=5)
                 mark_unmatched_keys_on_sheet(writer.sheets["赛卓-未交订单"], unmatched_unfulfilled, wafer_col=1, spec_col=2, name_col=3)
                 mark_unmatched_keys_on_sheet(writer.sheets["赛卓-预测"], unmatched_forecast, wafer_col=3, spec_col=1, name_col=2)
                 writer.sheets["赛卓-预测"].delete_rows(2)
                 mark_unmatched_keys_on_sheet(writer.sheets["赛卓-成品库存"], unmatched_finished, wafer_col=1, spec_col=2, name_col=3)
                 mark_unmatched_keys_on_sheet(writer.sheets["赛卓-成品在制"], unmatched_in_progress, wafer_col=3, spec_col=4, name_col=5)
                 writer.sheets["赛卓-新旧料号"].delete_rows(2)
+                mark_keys_on_sheet(writer.sheets["汇总"], all_mapped_keys, key_cols=(1, 2, 3))
                 st.success("✅ 已完成未匹配项标记")
             except Exception as e:
                 st.warning(f"⚠️ 未匹配标记失败：{e}")
