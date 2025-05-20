@@ -59,6 +59,8 @@ class PivotProcessor:
 
 
                     # 映射替换（如果有）
+                    st.write("additional_sheets")
+                    st.write(additional_sheets)
                     if sheet_name in FIELD_MAPPINGS and "mapping" in (additional_sheets or {}):
                         mapping_df = additional_sheets["mapping"]
 
@@ -75,7 +77,7 @@ class PivotProcessor:
                             st.write("列名：", mapping_df.columns.tolist())
                             continue
 
-
+                        
                         df = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[sheet_name])
 
 
