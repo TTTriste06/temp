@@ -104,9 +104,8 @@ class PivotProcessor:
 
 
                     # ✅ 如果当前是“未交订单”sheet，则拷贝前三列到新 sheet
-                    st.write(sheet_name)
 
-                    if sheet_name == "赛卓-未交订单":
+                    if sheet_name == "unfulfilled_orders":
                         try:
                             # 提取前三列作为汇总基础
                             summary_preview = df[["晶圆品名", "规格", "品名"]].drop_duplicates().reset_index(drop=True)
