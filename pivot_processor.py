@@ -82,6 +82,8 @@ class PivotProcessor:
                     # 构建透视表
                     pivoted = self._create_pivot(df, config)
                     pivoted_display = pivoted.reset_index(drop=True)
+                    st.write("sheet_name")
+                    st.write(sheet_name)
                     if sheet_name == "finished_inventory":
                         df_finished = pivoted
                     elif sheet_name == "finished_products":
