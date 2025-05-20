@@ -68,6 +68,8 @@ class PivotProcessor:
                         ] + list(mapping_df.columns[9:])
                         st.success(f"✅ `{sheet_key}` 正在进行新旧料号替换...")
                         df, mapped_keys = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[sheet_key])
+                        st.write("mapped_keys")
+                        st.write(mapped_keys)
                         all_mapped_keys.update(mapped_keys)
     
                     if "date_format" in config:
