@@ -166,7 +166,7 @@ class PivotProcessor:
                 writer.sheets["赛卓-新旧料号"].delete_rows(2)
                 st.write("all_mapped_keys")
                 st.write(all_mapped_keys)
-                mark_keys_on_sheet(writer.sheets["汇总"], all_mapped_keys, key_cols=(2, 3, 1))
+                mark_keys_on_sheet(writer.sheets["汇总"], all_mapped_keys, (2, 3, 1))
                 st.success("✅ 已完成未匹配项标记")
             except Exception as e:
                 st.warning(f"⚠️ 未匹配标记失败：{e}")
