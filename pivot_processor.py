@@ -86,6 +86,8 @@ class PivotProcessor:
                     st.write(sheet_name)
                     if sheet_name == "finished_inventory":
                         df_finished = pivoted
+                        st.write("df_finished")
+                        st.write(df_finished)
                     elif sheet_name == "finished_products":
                         product_in_progress = pivoted
 
