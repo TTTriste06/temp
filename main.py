@@ -6,6 +6,7 @@ from pivot_processor import PivotProcessor
 from ui import setup_sidebar, get_uploaded_files
 from github_utils import upload_to_github, download_from_github
 from urllib.parse import quote
+from excel_utils import clean_df
 
 def main():
     st.set_page_config(page_title="Excel数据透视汇总工具", layout="wide")
@@ -58,6 +59,7 @@ def main():
 
                 # 保留原始名字作为字典 key
                 df = pd.read_excel(file_io)
+                df = clean_df(df)
                 additional_sheets[name.replace(".xlsx", "")] = df
             else:
                 try:
