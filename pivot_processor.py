@@ -8,7 +8,7 @@ from openpyxl.styles import Alignment, Font, PatternFill
 from openpyxl import load_workbook
 from config import CONFIG, REVERSE_MAPPING
 from excel_utils import (
-    adjust_column_width, 
+    adjust_column_width,
     merge_header_for_summary, 
     mark_unmatched_keys_on_sheet,
     mark_keys_on_sheet
