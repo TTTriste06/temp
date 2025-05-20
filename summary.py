@@ -197,7 +197,7 @@ def merge_finished_inventory(summary_df, finished_df):
         if key not in summary_keys:
             unmatched_keys.append(key)
 
-    st.write("✅ 正在按主键合并以下列：", value_cols)
+    # st.write("✅ 正在按主键合并以下列：", value_cols)
     merged = summary_df.merge(finished_df[key_cols + value_cols], on=key_cols, how="left")
 
     return merged, unmatched_keys
