@@ -4,6 +4,28 @@ from openpyxl.styles import Alignment, Font
 from openpyxl.styles import PatternFill
 from openpyxl.worksheet.table import Table, TableStyleInfo
 
+def standardize(val):
+    """
+    将输入标准化为可比较的字符串：
+    - 转字符串
+    - 去除首尾空格
+    - 去除单引号/双引号（英文和中文）
+    - 统一半角/全角空格
+    """
+    if val is None:
+        return ''
+    
+    val = str(val).strip()
+    
+    # 去掉包裹的引号（包括中英文单引号和双引号）
+    val = val.strip('\'"“”‘’')  # 含中文引号
+    
+    # 替换全角空格为半角空格
+    val = val.replace('\u3000', ' ')
+
+    return val
+
+
 def adjust_column_width(writer, sheet_name, df):
     """
     自动调整 Excel 工作表中各列的宽度以适应内容长度。
@@ -67,9 +89,6 @@ def mark_unmatched_keys_on_sheet(ws, unmatched_keys, wafer_col=1, spec_col=2, na
     """
     red_fill = PatternFill(start_color="FF9999", end_color="FF9999", fill_type="solid")
 
-    def standardize(val):
-        return str(val).strip() if val is not None else ''
-
     unmatched_set = set(
         tuple(standardize(x) for x in key)
         for key in unmatched_keys
@@ -84,8 +103,6 @@ def mark_unmatched_keys_on_sheet(ws, unmatched_keys, wafer_col=1, spec_col=2, na
             for col in range(1, ws.max_column + 1):
                 ws.cell(row=row, column=col).fill = red_fill
 
-from openpyxl.styles import PatternFill
-import streamlit as st
 
 def mark_keys_on_sheet(ws, key_set, key_cols=(1, 2, 3)):
     """
@@ -97,9 +114,6 @@ def mark_keys_on_sheet(ws, key_set, key_cols=(1, 2, 3)):
     - key_cols: 表示主键在 sheet 中的列号 (从1开始)，默认是 (1, 2, 3)
     """
     yellow_fill = PatternFill(start_color="FFFF99", end_color="FFFF99", fill_type="solid")
-
-    def standardize(val):
-        return str(val).strip() if val is not None else ''
 
     # 标准化 key_set
     standardized_keys = set(
