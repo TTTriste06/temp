@@ -71,7 +71,7 @@ class PivotProcessor:
                         mapping_df.columns = [
                             "旧规格", "旧品名", "旧晶圆品名",
                             "新规格", "新品名", "新晶圆品名",
-                            "封装厂", "PC", "半成品"
+                            "封装厂", "PC", "半成品", "备注"
                         ] + list(mapping_df.columns[9:])
                         st.success(f"✅ `{sheet_key}` 正在进行新旧料号替换...")
                         
