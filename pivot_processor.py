@@ -148,7 +148,8 @@ class PivotProcessor:
                 st.error(f"❌ 汇总数据合并失败: {e}")
                 return
 
-            #summary_preview = merge_duplicate_product_names(summary_preview)
+            writer.sheets["赛卓-新旧料号"].delete_rows(61)
+            summary_preview = merge_duplicate_product_names(summary_preview)
             summary_preview.to_excel(writer, sheet_name="汇总", index=False)
             adjust_column_width(writer, "汇总", summary_preview)
             ws = writer.sheets["汇总"]
