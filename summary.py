@@ -68,16 +68,6 @@ def append_unfulfilled_summary_columns(summary_df, pivoted_df):
     unfulfilled_cols = [col for col in pivoted_df.columns if "未交订单数量" in col]
     unfulfilled_df = pivoted_df[["晶圆品名", "规格", "品名"] + unfulfilled_cols].copy()
 
-    # ✅ 检查是否存在主键缺失的幽灵行
-    ghost_rows = unfulfilled_df[
-        unfulfilled_df["晶圆品名"].isna() |
-        unfulfilled_df["规格"].isna() |
-        unfulfilled_df["品名"].isna()
-    ]
-    if not ghost_rows.empty:
-        st.warning("⚠️ 检测到未交订单透视结果中含有主键缺失的幽灵行：")
-        st.dataframe(ghost_rows)
-
     # 计算总未交订单
     unfulfilled_df["总未交订单"] = unfulfilled_df[unfulfilled_cols].sum(axis=1)
 
