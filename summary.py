@@ -199,36 +199,35 @@ def merge_finished_inventory(summary_df, finished_df):
 
 def append_product_in_progress(summary_df, product_in_progress_df, mapping_df):
     """
-    将成品在制与半成品在制信息合并到 summary_df 中，并返回未匹配的主键列表。
+    将成品在制与半成品在制信息合并到 summary_df 中，并返回未匹配的主键。
 
     参数：
-    - summary_df: 汇总表，包含 '晶圆品名'、'规格'、'品名'
-    - product_in_progress_df: 成品在制透视表，包含 '晶圆型号'、'产品规格'、'产品品名' 及数值列
-    - mapping_df: 新旧料号映射表，包含 '新晶圆品名'、'新规格'、'新品名'、'旧晶圆品名'、'旧规格'、'旧品名'、'半成品'
+    - summary_df: 汇总表（含“晶圆品名”，“规格”，“品名”）
+    - product_in_progress_df: 透视后的“赛卓-成品在制”数据
+    - mapping_df: 新旧料号映射表，包含“半成品”列
 
     返回：
-    - summary_df: 已添加 '成品在制' 和 '半成品在制' 列
-    - unmatched_keys: 未匹配上的主键列表
+    - summary_df: 添加了“成品在制”与“半成品在制”的 DataFrame
+    - unmatched_keys: list of (来源, 晶圆品名, 规格, 品名) 未被使用的主键
     """
-    import numpy as np
-
-    # 清洗并标准化字段
     summary_df = summary_df.copy()
-    summary_df = summary_df.astype(str).applymap(str.strip)
-    product_in_progress_df = product_in_progress_df.fillna("").astype(str).applymap(str.strip)
-    mapping_df = mapping_df.fillna("").astype(str).applymap(str.strip)
-
-    # 数值列提取（确保仅包含数字）
-    numeric_cols = [col for col in product_in_progress_df.columns if col.startswith("数量_")]
-
     summary_df["成品在制"] = 0
     summary_df["半成品在制"] = 0
+
+    # 清洗用于匹配的字段
+    for col in ["晶圆品名", "规格", "品名"]:
+        summary_df[col] = summary_df[col].astype(str).str.strip()
+
+    for col in ["晶圆型号", "产品规格", "产品品名"]:
+        product_in_progress_df[col] = product_in_progress_df[col].astype(str).str.strip()
+
+    numeric_cols = [col for col in product_in_progress_df.columns if col.startswith("数量_")]
 
     used_keys = set()
     unmatched_keys = []
 
-    # ---------- 成品在制 ----------
-    for _, row in product_in_progress_df.iterrows():
+    # ----------- 成品在制部分 ------------
+    for idx, row in product_in_progress_df.iterrows():
         key = (row["晶圆型号"], row["产品规格"], row["产品品名"])
         mask = (
             (summary_df["晶圆品名"] == key[0]) &
@@ -236,48 +235,51 @@ def append_product_in_progress(summary_df, product_in_progress_df, mapping_df):
             (summary_df["品名"] == key[2])
         )
         if mask.any():
-            total = sum(float(row[col]) for col in numeric_cols if row[col].replace('.', '', 1).isdigit())
-            summary_df.loc[mask, "成品在制"] = total
             used_keys.add(key)
+            summary_df.loc[mask, "成品在制"] = row[numeric_cols].sum()
         else:
             unmatched_keys.append(("成品在制", *key))
 
-    # ---------- 半成品在制 ----------
-    semi_rows = mapping_df[mapping_df["半成品"] != ""]
+    # ----------- 半成品在制部分 ------------
+    semi_rows = mapping_df[mapping_df["半成品"].notna() & (mapping_df["半成品"] != "")]
+    semi_rows = semi_rows.fillna("")
+
     for _, row in semi_rows.iterrows():
+        row = row.astype(str).str.strip()
         半成品名 = row["半成品"]
-        主晶圆 = row["新晶圆品名"] or row["旧晶圆品名"]
-        主规格 = row["新规格"] or row["旧规格"]
-        主品名 = row["新品名"] or row["旧品名"]
 
-        # 优先新规格匹配
+        # 优先使用新料号作为主键
+        if row["新晶圆品名"] and row["新规格"] and row["新品名"]:
+            主晶圆 = row["新晶圆品名"]
+            主规格 = row["新规格"]
+            主品名 = row["新品名"]
+            来源 = "新料号"
+        elif row["旧晶圆品名"] and row["旧规格"] and row["旧品名"]:
+            主晶圆 = row["旧晶圆品名"]
+            主规格 = row["旧规格"]
+            主品名 = row["旧品名"]
+            来源 = "旧料号"
+        else:
+            continue  # 跳过缺失主键的行
+
+        # 在成品在制中找“半成品”的在制数据
         matched = product_in_progress_df[
-            (product_in_progress_df["产品品名"] == 半成品名) &
-            (product_in_progress_df["产品规格"] == row["新规格"]) &
-            (product_in_progress_df["晶圆型号"] == row["新晶圆品名"])
+            (product_in_progress_df["晶圆型号"] == 主晶圆) &
+            (product_in_progress_df["产品规格"] == 主规格) &
+            (product_in_progress_df["产品品名"] == 半成品名)
         ]
-        if matched.empty:
-            matched = product_in_progress_df[
-                (product_in_progress_df["产品品名"] == 半成品名) &
-                (product_in_progress_df["产品规格"] == row["旧规格"]) &
-                (product_in_progress_df["晶圆型号"] == row["旧晶圆品名"])
-            ]
+        半成品在制值 = matched[numeric_cols].sum().sum() if not matched.empty else 0
 
-        半成品在制值 = sum(
-            float(v) for col in numeric_cols for v in matched[col]
-            if isinstance(v, str) and v.replace('.', '', 1).isdigit()
-        ) if not matched.empty else 0
-
+        # 查找汇总表中是否存在该主键（主品）
         mask = (
             (summary_df["晶圆品名"] == 主晶圆) &
             (summary_df["规格"] == 主规格) &
             (summary_df["品名"] == 主品名)
         )
-
         if mask.any():
             summary_df.loc[mask, "半成品在制"] = 半成品在制值
             used_keys.add((主晶圆, 主规格, 主品名))
         else:
-            unmatched_keys.append(("半成品", 主晶圆, 主规格, 主品名))
+            unmatched_keys.append((f"半成品({来源})", 主晶圆, 主规格, 主品名))
 
     return summary_df, unmatched_keys
