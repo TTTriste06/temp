@@ -12,7 +12,8 @@ from excel_utils import (
     clean_df,
     merge_header_for_summary, 
     mark_unmatched_keys_on_sheet,
-    mark_keys_on_sheet
+    mark_keys_on_sheet,
+    merge_duplicate_product_names
 )
 from mapping_utils import apply_mapping_and_merge
 from month_selector import process_history_columns
@@ -147,6 +148,7 @@ class PivotProcessor:
                 st.error(f"❌ 汇总数据合并失败: {e}")
                 return
 
+            summary_preview = merge_duplicate_product_names(summary_preview)
             summary_preview.to_excel(writer, sheet_name="汇总", index=False)
             adjust_column_width(writer, "汇总", summary_preview)
             ws = writer.sheets["汇总"]
