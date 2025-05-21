@@ -80,13 +80,13 @@ class PivotProcessor:
                         if sheet_key == "unfulfilled_orders":
                             # 替换前
                             st.write("替换前原始未交订单主键样例：")
-                            st.dataframe(df[["晶圆品名", "规格", "品名"]].head(10))
+                            st.dataframe(df[["晶圆品名", "规格", "品名"]])
                         
                             df, key_unfulfilled = apply_mapping_and_merge(df, mapping_df, FIELD_MAPPINGS[sheet_key])
                         
                             # 替换后
                             st.write("替换后未交订单主键样例：")
-                            st.dataframe(df[["晶圆品名", "规格", "品名"]].head(10))
+                            st.dataframe(df[["晶圆品名", "规格", "品名"]])
 
                             all_mapped_keys.update(key_unfulfilled)
                         elif sheet_key == "finished_inventory":
