@@ -230,10 +230,6 @@ class PivotProcessor:
         if "date_format" in config:
             config["columns"] = f"{config['columns']}_年月"
     
-        # ✅ 添加以下两行，确保每行唯一
-        df["源行索引"] = df.index.astype(str)
-        config["index"].append("源行索引")
-    
         pivoted = pd.pivot_table(
             df,
             index=config["index"],
