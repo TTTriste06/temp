@@ -24,7 +24,7 @@ def get_uploaded_files():
         CONFIG["selected_month"] = None
         
     uploaded_files = st.file_uploader(
-        "📂 上传 5 个核心 Excel 文件（未交订单/成品在制/成品库存/晶圆库存/CP在制）",
+        "📂 上传 5 个核心 Excel 英文文件（未交订单/成品在制/成品库存/晶圆库存/CP在制）",
         type=["xlsx"],
         accept_multiple_files=True,
         key="main_files"
